@@ -1,5 +1,6 @@
 from typing import List
 from dataclasses import dataclass
+from lib.utxoset import UTXO
 import requests
 
 
@@ -22,8 +23,12 @@ class Peer:
         """ Send transaction to peer. """
         pass
 
-    def balance(self, address: str):
+    def balance(self, address: str) -> float:
         """ Get address' balance from peer. """
+        pass
+
+    def utxo_sum(self, address: str, amount: float) -> List[UTXO]:
+        """ Get list of unspent transactions from address with accumulated value greater or equal than amount from peer. """
         pass
 
 

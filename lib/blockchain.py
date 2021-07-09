@@ -1,10 +1,10 @@
 from lib.block import Block
 from lib.block import genesis_block
 from lib.block import build_block
+from lib.utxoset import UTXO
+from lib.utxoset import UTXOSet
 from lib.transaction import Transaction
 from lib.transaction import TxIn
-from lib.transaction import UTXO
-from lib.transaction import UTXOSet
 from lib.exceptions import InvalidBlock
 from lib.exceptions import InvalidTransaction
 from lib.exceptions import InvalidBlockchain
@@ -14,7 +14,6 @@ from typing import List
 import time
 """
 TODO:
-    * replace chain
     * dynamic difficulty
     * type checking
 TOREAD:

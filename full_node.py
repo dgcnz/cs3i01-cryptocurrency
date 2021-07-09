@@ -7,7 +7,7 @@ import argparse
 
 app = Flask(__name__)
 
-parser = argparse.ArgumentParser(description='Miner node.')
+parser = argparse.ArgumentParser(description='Full node.')
 parser.add_argument('key', type=str, help='Signing key.')
 
 args = parser.parse_args()
@@ -34,3 +34,12 @@ def get_difficulty():
 @app.route('/blockchain', methods=['GET'])
 def get_blockchain():
     return blockchain.blocks()
+
+
+@app.route('/utxo-sum', methods=['GET'])
+def get_utxo_sum():
+    address = requests.args.get('address')
+    amount = requests.args.get('amount')
+    return blockchain.utxoset.utxo_sum(address, amount)
+
+

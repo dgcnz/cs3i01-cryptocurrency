@@ -1,9 +1,8 @@
 from typing import List
+from lib.utils import hex_to_bin
+from lib.utils import hash_sha256
 from lib.transaction import Transaction, genesis_transaction
-from nacl.hash import sha256
-from nacl.encoding import HexEncoder
 from dataclasses import dataclass
-import pickle
 
 # TODO: precompute genesis block attributes
 genesis_block = Block(0, '', '', 0, [genesis_transaction], 0, 0)
@@ -29,13 +28,7 @@ class Block:
 
 def hash_block_content(index: int, prev_bhash: str, timestamp: int,
                        data: List[Transaction], difficulty: int, nonce: int):
-    return sha256(
-        pickle.dumps([index, prev_bhash, timestamp, data, difficulty,
-                      nonce])).decode()
-
-
-def hex_to_bin(hexstring: str) -> str:
-    return bin(int(hexstring, 16))[2:]
+    return hash_sha256([index, prev_bhash, timestamp, data, difficulty, nonce])
 
 
 def validate_hash_difficulty(bhash: str, difficulty: int) -> bool:
@@ -43,7 +36,7 @@ def validate_hash_difficulty(bhash: str, difficulty: int) -> bool:
 
 
 def build_block(index: int, prev_bhash: str, timestamp: int,
-               data: List[Transaction], difficulty: int):
+                data: List[Transaction], difficulty: int):
     nonce: int = 0
     while True:
         bhash = hash_block_content(index, prev_bhash, timestamp, data,
