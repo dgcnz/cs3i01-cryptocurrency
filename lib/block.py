@@ -19,8 +19,12 @@ class Block:
     difficulty: int
     nonce: int
 
-    def valid(self) -> bool:
-        pass
+    def valid(self, prev: Block) -> bool:
+        """ Checks block's validity """
+        return self.prev_bhash == prev.bhash and validate_hash_difficulty(
+            self.bhash, self.difficulty) and hash_block_content(
+                self.index, self.prev_bhash, self.timestamp, self.data,
+                self.difficulty, self.nonce) == self.bhash
 
 
 def hash_block_content(index: int, prev_bhash: str, timestamp: int,
@@ -38,7 +42,7 @@ def validate_hash_difficulty(bhash: str, difficulty: int) -> bool:
     return hex_to_bin(bhash).startswith('0' * difficulty)
 
 
-def make_block(index: int, prev_bhash: str, timestamp: int,
+def build_block(index: int, prev_bhash: str, timestamp: int,
                data: List[Transaction], difficulty: int):
     nonce: int = 0
     while True:
