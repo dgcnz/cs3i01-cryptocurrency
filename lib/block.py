@@ -1,9 +1,15 @@
 from typing import List
-from lib.transaction import Transaction
+from lib.transaction import Transaction, genesis_transaction
 from nacl.hash import sha256
 from nacl.encoding import HexEncoder
+from dataclasses import dataclass
+import pickle
+
+# TODO: precompute genesis block attributes
+genesis_block = Block(0, '', '', 0, [genesis_transaction], 0, 0)
 
 
+@dataclass
 class Block:
     index: int
     bhash: str
@@ -13,23 +19,38 @@ class Block:
     difficulty: int
     nonce: int
 
-    def __init__(self, index: int, bhash: str, prev_bhash: str, timestamp: int,
-                 data: List[Transaction], difficulty: int, nonce: int):
-        self.index = index
-        self.bhash = bhash
-        self.prev_bhash = prev_bhash
-        self.timestamp = timestamp
-        self.data = data
-        self.difficulty = difficulty
-
-    def __bytes__(self):
-        return bytes(index) + bytes(bhash, 'utf-8') + bytes(timestamp) + bytes(
-            data) + bytes(difficulty) + bytes(nonce)
-
-    def __hash__(self):
-        sha256(self.__bytes__())
+    def valid(self) -> bool:
+        pass
 
 
-def compute_block(index: int, prev_bhash: str, timestamp: int,
-                  data: List[Transaction], difficulty: int):
-    nonce = 0
+def hash_block_content(index: int, prev_bhash: str, timestamp: int,
+                       data: List[Transaction], difficulty: int, nonce: int):
+    return sha256(
+        pickle.dumps([index, prev_bhash, timestamp, data, difficulty,
+                      nonce])).decode()
+
+
+def hex_to_bin(hexstring: str) -> str:
+    return bin(int(hexstring, 16))[2:]
+
+
+def validate_hash_difficulty(bhash: str, difficulty: int) -> bool:
+    return hex_to_bin(bhash).startswith('0' * difficulty)
+
+
+def make_block(index: int, prev_bhash: str, timestamp: int,
+               data: List[Transaction], difficulty: int):
+    nonce: int = 0
+    while True:
+        bhash = hash_block_content(index, prev_bhash, timestamp, data,
+                                   difficulty, nonce)
+        if validate_hash_difficulty(bhash, difficulty):
+            return Block(index, bhash, prev_bhash, timestamp, data, difficulty,
+                         nonce)
+        nonce += 1
+
+
+def verify_block_hash(block: Block):
+    return hash_block_content(block.index, block.prev_bhash, block.timestamp,
+                              block.data, block.difficulty,
+                              block.nonce) == block.bhash
