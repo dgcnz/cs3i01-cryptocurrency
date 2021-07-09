@@ -47,19 +47,27 @@ class Blockchain:
         for tx in block.data:
             self.utxoset.add(tx)
 
+    def latest(self) -> Block:
+        """ Get latest blockhain block. """
+        return self.blockchain[-1]
+
+    def blocks(self) -> List[Block]:
+        """ Get all blockchain blocks. """
+        return self.blockchain
+
     def is_chain_valid(self) -> bool:
         """ Checks blockchain's validity. """
         pass
 
-    def cost(self) -> int:
-        """ Checks total cost of a blockchain. """
+    def difficulty(self) -> int:
+        """ Checks total difficulty of a blockchain. """
         return sum(map(lambda block: block.difficulty, self.blockchain))
 
     def replace(self, other: Blockchain):
         """ Replace current blockchain with other one. """
         if not other.is_chain_valid():
             raise InvalidBlockchain()
-        if self.cost() >= other.cost():
+        if self.difficulty() >= other.difficulty():
             raise WorseBlockchain()
         self.blockchain = other.blockchain
         self.utxoset.build(other.blockchain)

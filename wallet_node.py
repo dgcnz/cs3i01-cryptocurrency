@@ -9,7 +9,7 @@ api = Blueprint('api', __name__, template_folder='templates')
 p2p = P2P()
 
 
-@app.route('/transaction', methods=['POST'])
+@api.route('/transaction', methods=['POST'])
 def transaction():
     """ Broadcast transaction to peers. """
     peers = p2p.peers
@@ -19,14 +19,14 @@ def transaction():
         peer.transaction(address, amount)
 
 
-@app.route('/generate-key', methods=['POST'])
+@api.route('/generate-key', methods=['POST'])
 def generate_key():
     """ Generate private signing key. """
     key = SigningKey.generate()
     return key.encode()
 
 
-@app.route('/balance', methods=['GET'])
+@api.route('/balance', methods=['GET'])
 def balance():
     """ Ask peers for balance. """
     peer = p2p.get_k_best(1)[0]
