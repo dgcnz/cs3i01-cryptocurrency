@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import Blueprint
 from lib.p2p import P2P
+from lib.utxo import build_transaction
 from nacl.signing import SigningKey
 
 app = Flask(__name__)
@@ -43,5 +44,3 @@ def balance():
     peer = p2p.get_k_best(1)[0]
     address = request.args.get('address')
     return peer.balance(address)
-
-
