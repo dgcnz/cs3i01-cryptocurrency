@@ -28,13 +28,15 @@ def transaction():
 
     tx = build_transaction(my_utxo, amount, tx_fee, address, private_key)
     for peer in peers:
-        peer.transaction(tx)
+        peer.send_transaction(tx)
 
 
 @api.route('/generate-key', methods=['POST'])
 def generate_key():
     """ Generate private signing key. """
     key = SigningKey.generate()
+    # TODO: save on /.keys/ idk
+    # TODO: v2. passphrase encryption
     return key.encode()
 
 

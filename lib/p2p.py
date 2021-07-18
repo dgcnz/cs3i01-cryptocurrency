@@ -19,7 +19,7 @@ class Peer:
             return int(r.text)
         return 0
 
-    def transaction(self, address: str, amount: int):
+    def send_transaction(self, address: str, amount: int):
         """ Send transaction to peer. """
         pass
 

@@ -32,11 +32,13 @@ def hash_block_content(index: int, prev_bhash: str, timestamp: int,
 
 
 def validate_hash_difficulty(bhash: str, difficulty: int) -> bool:
+    """ Checks if hash has expected difficulty. """
     return hex_to_bin(bhash).startswith('0' * difficulty)
 
 
 def build_block(index: int, prev_bhash: str, timestamp: int,
                 data: List[Transaction], difficulty: int):
+    """ Mines single block. """
     nonce: int = 0
     while True:
         bhash = hash_block_content(index, prev_bhash, timestamp, data,
