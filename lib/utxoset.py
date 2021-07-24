@@ -11,7 +11,7 @@ class UTXO:
     tx_id: str
     txout_index: int
     address: str
-    amount: float
+    amount: int
 
     def matches(self, txin: TxIn) -> bool:
         """ Check if transaction input refers to unspent transaction output. """
@@ -63,11 +63,11 @@ class UTXOSet:
             for tx in block.data:
                 self.add(tx)
 
-    def utxo_sum(self, address: str, amount: float) -> List[UTXO]:
+    def utxo_sum(self, address: str, amount: int) -> List[UTXO]:
         """ Get list of unspent transactions from address with accumulated value greater or equal than amount. """
 
         ans: List[UTXO] = []
-        accsum: float = 0.0
+        accsum: int = 0
         for utxo in self.utxoset:
             if accsum >= amount:
                 break

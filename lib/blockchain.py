@@ -3,6 +3,7 @@ from lib.block import genesis_block
 from lib.block import build_block
 from lib.utxoset import UTXO
 from lib.utxoset import UTXOSet
+from lib.utils import current_timestamp
 from lib.transaction import Transaction
 from lib.transaction import TxIn
 from lib.exceptions import InvalidBlock
@@ -11,7 +12,6 @@ from lib.exceptions import InvalidBlockchain
 from lib.exceptions import WorseBlockchain
 from flask import Blueprint
 from typing import List
-import time
 """
 TODO:
     * dynamic difficulty
@@ -31,7 +31,7 @@ class Blockchain:
             raise InvalidTransaction()
 
         last: Block = self.blockchain[-1]
-        timestamp: int = int(time.time())
+        timestamp: int = current_timestamp()
         difficulty: int = 4
         new_block: Block = build_block(last.index + 1, last.bhash, timestamp,
                                        transactions, difficulty)
@@ -71,6 +71,6 @@ class Blockchain:
         self.blockchain = other.blockchain
         self.utxoset.build(other.blockchain)
 
-    def balance(self, address: str) -> float:
+    def balance(self, address: str) -> int:
         """ Get balance of address. """
         return sum(utxo.amount for utxo in self.utxoset.get(address))
