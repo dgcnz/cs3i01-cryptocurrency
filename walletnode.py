@@ -1,13 +1,21 @@
 from flask import Flask
 from flask import render_template
 from flask import Blueprint
+from flask import request
 from lib.p2p import P2P
-from lib.utxo import build_transaction
+from lib.transaction import build_transaction
 from nacl.signing import SigningKey
+from pathlib import Path
+from lib.wallet import Wallet
+import logging
 
 app = Flask(__name__)
-api = Blueprint('api', __name__, template_folder='templates')
+api = Blueprint('api',
+                __name__,
+                template_folder='templates',
+                url_prefix='/api')
 p2p = P2P()
+wallet = Wallet()
 
 
 @api.route('/transaction', methods=['POST'])
@@ -31,13 +39,13 @@ def transaction():
         peer.send_transaction(tx)
 
 
-@api.route('/generate-key', methods=['POST'])
-def generate_key():
+@api.route('/generate-keys', methods=['POST'])
+def generate_keys():
     """ Generate private signing key. """
-    key = SigningKey.generate()
-    # TODO: save on /.keys/ idk
-    # TODO: v2. passphrase encryption
-    return key.encode()
+    name = request.args.get('name')
+    logging.warning(name)
+    keys_path = wallet.create_keys(name)
+    return str(keys_path)
 
 
 @api.route('/balance', methods=['GET'])
@@ -46,3 +54,7 @@ def balance():
     peer = p2p.get_k_best(1)[0]
     address = request.args.get('address')
     return peer.balance(address)
+
+
+app.register_blueprint(api)
+print(app.url_map)
