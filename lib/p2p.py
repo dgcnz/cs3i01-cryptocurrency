@@ -23,11 +23,11 @@ class Peer:
         """ Send transaction to peer. """
         pass
 
-    def balance(self, address: str) -> float:
+    def balance(self, address: str) -> int:
         """ Get address' balance from peer. """
         pass
 
-    def utxo_sum(self, address: str, amount: float) -> List[UTXO]:
+    def utxo_sum(self, address: str, amount: int) -> List[UTXO]:
         """ Get list of unspent transactions from address with accumulated value greater or equal than amount from peer. """
         pass
 

@@ -4,9 +4,6 @@ from lib.utils import hash_sha256
 from lib.transaction import Transaction, genesis_transaction
 from dataclasses import dataclass
 
-# TODO: precompute genesis block attributes
-genesis_block = Block(0, '', '', 0, [genesis_transaction], 0, 0)
-
 
 @dataclass
 class Block:
@@ -18,7 +15,7 @@ class Block:
     difficulty: int
     nonce: int
 
-    def valid(self, prev: Block) -> bool:
+    def valid(self, prev: 'Block') -> bool:
         """ Checks block's validity """
         return self.prev_bhash == prev.bhash and validate_hash_difficulty(
             self.bhash, self.difficulty) and hash_block_content(
@@ -53,3 +50,8 @@ def verify_block_hash(block: Block):
     return hash_block_content(block.index, block.prev_bhash, block.timestamp,
                               block.data, block.difficulty,
                               block.nonce) == block.bhash
+
+
+genesis_block = Block(
+    0, 'd55209070f5f82e8df80b8a386c3b02bacd12bd6e44ca9353744c7a046c1ec1a', '',
+    1627135592, genesis_transaction, 0, 0)

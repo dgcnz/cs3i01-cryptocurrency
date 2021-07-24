@@ -1,6 +1,9 @@
 class InvalidBlock(Exception):
     pass
 
+class KeysExist(Exception):
+    pass
+
 
 class InvalidTransaction(Exception):
     pass
