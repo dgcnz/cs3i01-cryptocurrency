@@ -13,9 +13,6 @@ with open("config.yaml", 'r') as f:
 
 
 class Wallet:
-    def __init__(self):
-        pass
-
     def create_keys(self, name: str) -> Path:
         # TODO passphrase encryption
         pkminus = SigningKey.generate()

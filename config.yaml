@@ -1,2 +1,3 @@
 ---
  tfc_path: "~/.tfc/"
+ miner_keyname: "genesis"

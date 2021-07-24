@@ -6,49 +6,54 @@ from lib.p2p import P2P
 from lib.blockchain import Blockchain
 from lib.txpool import TxPool
 from pathlib import Path
-import argparse
+import yaml
+import jsonpickle
 
 app = Flask(__name__)
+api = Blueprint('api',
+                __name__,
+                template_folder='templates',
+                url_prefix='/api')
 
-parser = argparse.ArgumentParser(description='Full node.')
-parser.add_argument('key_path', type=str, help='Signing key path.')
-
-args = parser.parse_args()
-KEY_PATH = Path(args.key_path)
+MINER_KEYNAME: str
+with open("config.yaml", 'r') as f:
+    config = yaml.safe_load(f)
+    MINER_KEYNAME = config['miner_keyname']
 
 blockchain: Blockchain = Blockchain()
 txpool: TxPool = TxPool()
 
 
-@app.route('/latest-block', methods=['GET'])
+@api.route('/latest-block', methods=['GET'])
 def get_latest_block():
-    return blockchain.latest()
+    block = blockchain.latest()
+    return jsonpickle.encode(block)
 
 
-@app.route('/balance', methods=['GET'])
+@api.route('/balance', methods=['GET'])
 def get_balance():
     address = request.args.get('address')
     return blockchain.balance(address)
 
 
-@app.route('/difficulty', methods=['GET'])
+@api.route('/difficulty', methods=['GET'])
 def get_difficulty():
     return blockchain.difficulty()
 
 
-@app.route('/blockchain', methods=['GET'])
+@api.route('/blockchain', methods=['GET'])
 def get_blockchain():
     return blockchain.blocks()
 
 
-@app.route('/utxo-sum', methods=['GET'])
+@api.route('/utxo-sum', methods=['GET'])
 def get_utxo_sum():
     address = request.args.get('address')
     amount = request.args.get('amount')
     return blockchain.utxoset.utxo_sum(address, amount)
 
 
-@app.route('/transaction-pool', methods=['GET', 'PUT'])
+@api.route('/transaction-pool', methods=['GET', 'PUT'])
 def transaction_pool():
     if request.method == 'GET':
         return txpool.all()
@@ -58,10 +63,14 @@ def transaction_pool():
         txpool.add(tx)
 
 
-@app.route('/mine', methods=['POST'])
+@api.route('/mine', methods=['POST'])
 def mine():
     # TODO: query peers to update txpool
     txchunk = txpool.pop_chunk()
     block = blockchain.create_block(txchunk)
     # TODO: broadcast
     blockchain.add_block(block)
+
+
+app.register_blueprint(api)
+print(app.url_map)

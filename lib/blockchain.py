@@ -62,7 +62,7 @@ class Blockchain:
         """ Checks total difficulty of a blockchain. """
         return sum(map(lambda block: block.difficulty, self.blockchain))
 
-    def replace(self, other: Blockchain):
+    def replace(self, other: 'Blockchain'):
         """ Replace current blockchain with other one. """
         if not other.is_chain_valid():
             raise InvalidBlockchain()
