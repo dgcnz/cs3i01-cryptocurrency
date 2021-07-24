@@ -19,5 +19,5 @@ pub, prv = wallet.keys('genesis')
 tx = build_transaction([], GENESIS_COINS, 0, pub, prv)
 print(tx)
 
-b = build_block(0, '', current_timestamp(), tx, 0)
+b = build_block(0, '', current_timestamp(), [tx], 0)
 print(b)

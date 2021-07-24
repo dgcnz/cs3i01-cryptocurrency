@@ -33,7 +33,7 @@ def get_latest_block():
 @api.route('/balance', methods=['GET'])
 def get_balance():
     address = request.args.get('address')
-    return blockchain.balance(address)
+    return {'balance': blockchain.balance(address)}
 
 
 @api.route('/difficulty', methods=['GET'])
@@ -43,7 +43,7 @@ def get_difficulty():
 
 @api.route('/blockchain', methods=['GET'])
 def get_blockchain():
-    return blockchain.blocks()
+    return jsonpickle.encode(blockchain.blocks())
 
 
 @api.route('/utxo-sum', methods=['GET'])

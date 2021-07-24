@@ -27,11 +27,11 @@ class Wallet:
 
         return key_path
 
-    def pkplus(self, name) -> str:
+    def pkminus(self, name) -> str:
         key_path = TFC_PATH / name
         return key_path.read_text()
 
-    def pkminus(self, name) -> str:
+    def pkplus(self, name) -> str:
         key_path = (TFC_PATH / name).with_suffix('.pub')
         return key_path.read_text()
 

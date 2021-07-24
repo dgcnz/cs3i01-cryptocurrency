@@ -53,5 +53,5 @@ def verify_block_hash(block: Block):
 
 
 genesis_block = Block(
-    0, 'd55209070f5f82e8df80b8a386c3b02bacd12bd6e44ca9353744c7a046c1ec1a', '',
-    1627135592, genesis_transaction, 0, 0)
+    0, '7300c100475b78a3840eccd0b5cb6b187a38fde950a8555915a84697029b26a8', '',
+    1627141460, [genesis_transaction], 0, 0)

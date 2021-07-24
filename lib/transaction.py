@@ -50,8 +50,8 @@ def build_transaction(user_utxos: List['UTXO'], amount: int, tx_fee: int,
 
 
 genesis_transaction = Transaction(
-    'd9930a7f780de3cea556a0a56b10f010e8350c83cab5574c7ec1fe7db3f4c6af', [], [
+    'e79aa8c007b3b7d83d731e288adaba91156fba44e1ce3c95e8976abac7e875ea', [], [
         TxOut(
-            'f958c48a98c63dba40281f7cf446afb9802d74ec276d06cf62ff6ac92fd3921c',
+            'd92b1fa5cd87f44f4d7de989b455e9047a1d987eebe8d1248384338f4a756962',
             50)
     ])

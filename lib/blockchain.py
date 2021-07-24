@@ -22,8 +22,13 @@ TOREAD:
 
 
 class Blockchain:
-    blockchain: List[Block] = [genesis_block]
-    utxoset = UTXOSet()
+    blockchain: List[Block] = []
+    utxoset: UTXOSet
+
+    def __init__(self):
+        self.blockchain.append(genesis_block)
+        self.utxoset = UTXOSet()
+        self.utxoset.add(genesis_block.data[0])
 
     def create_block(self, transactions: List[Transaction]) -> Block:
         """ Wraps transactions as new block. """
