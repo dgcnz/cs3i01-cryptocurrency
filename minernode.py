@@ -38,7 +38,7 @@ def get_balance():
 
 @api.route('/difficulty', methods=['GET'])
 def get_difficulty():
-    return blockchain.difficulty()
+    return {'difficulty': blockchain.difficulty()}
 
 
 @api.route('/blockchain', methods=['GET'])
@@ -50,15 +50,14 @@ def get_blockchain():
 def get_utxo_sum():
     address = request.args.get('address')
     amount = request.args.get('amount')
-    return blockchain.utxoset.utxo_sum(address, amount)
+    return jsonpickle.encode(blockchain.utxoset.utxo_sum(address, amount))
 
 
 @api.route('/transaction-pool', methods=['GET', 'PUT'])
 def transaction_pool():
     if request.method == 'GET':
-        return txpool.all()
+        return jsonpickle.encode(txpool.all())
     elif request.method == 'PUT':
-        # TODO: unpickle
         tx = jsonpickle.decode(request.args.get('transaction'))
         txpool.add(tx)
 
