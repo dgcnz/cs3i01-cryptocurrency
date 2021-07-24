@@ -1,0 +1,41 @@
+services:
+  node1:
+    build: .
+    image: mlovatonv/toficoin:latest
+    environment:
+      - FLASK_APP=node.py
+      - HOST_PORT=3001
+      - NAME=node1
+    ports:
+      - "3001:5000"
+    networks:
+      nodes:
+        aliases:
+          - node1
+  node2:
+    image: mlovatonv/toficoin:latest
+    environment:
+      - FLASK_APP=node.py
+      - HOST_PORT=3002
+      - NAME=node2
+    ports:
+      - "3002:5000"
+    networks:
+      nodes:
+        aliases:
+          - node2
+  node3:
+    image: mlovatonv/toficoin:latest
+    environment:
+      - FLASK_APP=node.py
+      - HOST_PORT=3003
+      - NAME=node3
+    ports:
+      - "3003:5000"
+    networks:
+      nodes:
+        aliases:
+          - node3
+
+networks:
+  nodes:
