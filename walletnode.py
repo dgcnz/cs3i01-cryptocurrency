@@ -53,7 +53,7 @@ def balance():
     """ Ask peers for balance. """
     peer = p2p.get_k_best(1)[0]
     address = request.args.get('address')
-    return peer.balance(address)
+    return {'balance': peer.balance(address)}
 
 
 app.register_blueprint(api)
