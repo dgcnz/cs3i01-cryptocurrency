@@ -3,7 +3,7 @@ services:
     build: .
     image: mlovatonv/toficoin:latest
     environment:
-      - FLASK_APP=node.py
+      - FLASK_APP=walletnode.py
       - HOST_PORT=3001
       - NAME=node1
     ports:
@@ -15,7 +15,7 @@ services:
   node2:
     image: mlovatonv/toficoin:latest
     environment:
-      - FLASK_APP=node.py
+      - FLASK_APP=walletnode.py
       - HOST_PORT=3002
       - NAME=node2
     ports:
@@ -27,7 +27,7 @@ services:
   node3:
     image: mlovatonv/toficoin:latest
     environment:
-      - FLASK_APP=node.py
+      - FLASK_APP=minernode.py
       - HOST_PORT=3003
       - NAME=node3
     ports:
