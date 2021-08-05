@@ -37,7 +37,7 @@ class Blockchain:
 
         last: Block = self.blockchain[-1]
         timestamp: int = current_timestamp()
-        difficulty: int = 4
+        difficulty: int = 0  # TODO: set dynamic difficulty
         new_block: Block = build_block(last.index + 1, last.bhash, timestamp,
                                        transactions, difficulty)
         return new_block

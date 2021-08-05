@@ -25,6 +25,7 @@ class Block:
 
 def hash_block_content(index: int, prev_bhash: str, timestamp: int,
                        data: List[Transaction], difficulty: int, nonce: int):
+    """ Hashes content of block. """
     return hash_sha256([index, prev_bhash, timestamp, data, difficulty, nonce])
 
 
@@ -47,6 +48,7 @@ def build_block(index: int, prev_bhash: str, timestamp: int,
 
 
 def verify_block_hash(block: Block):
+    """ Verifies Block\'s Hash. """
     return hash_block_content(block.index, block.prev_bhash, block.timestamp,
                               block.data, block.difficulty,
                               block.nonce) == block.bhash

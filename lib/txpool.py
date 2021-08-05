@@ -1,12 +1,15 @@
 from typing import List
 from lib.transaction import Transaction
 from lib.exceptions import NotEnoughTransactions
+from dataclasses import dataclass
+from dataclasses import field
 
 TX_PER_BLOCK = 1
 
 
+@dataclass
 class TxPool:
-    txpool: List[Transaction]
+    txpool: List[Transaction] = field(default_factory=list)
 
     def add(self, tx: Transaction):
         """ Add transaction tx to transaction pool. """

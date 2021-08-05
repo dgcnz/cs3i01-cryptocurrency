@@ -1,5 +1,6 @@
 from typing import List
 from dataclasses import dataclass
+from dataclasses import field
 from lib.block import Block
 from lib.transaction import Transaction
 from lib.transaction import TxIn
@@ -18,16 +19,18 @@ class UTXO:
         return txin.tx_id == self.tx_id and txin.txout_index == self.txout_index
 
 
+@dataclass
 class UTXOSet:
-    utxoset: List[UTXO] = []  # genesis transaction?
+    utxoset: List[UTXO] = field(default_factory=list)
 
     def add(self, transaction: Transaction):
         """ Updates utxoset with new transaction. """
         # Removing transactions outputs referred by inputs (spent)
-        filter(
-            lambda utxo: not any(
-                utxo.matches(txin) for txin in transaction.txins),
-            self.utxoset)
+        self.utxoset = list(
+            filter(
+                lambda utxo: not any(
+                    utxo.matches(txin) for txin in transaction.txins),
+                self.utxoset))
 
         # Adding new unspent transaction outputs
         self.utxoset.extend([
@@ -63,12 +66,14 @@ class UTXOSet:
             for tx in block.data:
                 self.add(tx)
 
-    def utxo_sum(self, address: str, amount: int) -> List[UTXO]:
+    def find_utxos(self, address: str, amount: int) -> List[UTXO]:
         """ Get list of unspent transactions from address with accumulated value greater or equal than amount. """
 
         ans: List[UTXO] = []
         accsum: int = 0
         for utxo in self.utxoset:
+            if utxo.address != address:
+                continue
             if accsum >= amount:
                 break
             accsum += utxo.amount

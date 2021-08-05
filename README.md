@@ -9,15 +9,14 @@
 * **Args**:
     * `address`: public key of recipient, formatted as hexstring.
     * `amount`: amount of money to transfer to address.
-    * `tx_fee`: transaction fee.
-    * `private_key`: private key of wallet where to collect funds.
+    * `keyname`: Key_name from where to collect funds.
 
 ---
 
-* **Endpoint**: `POST /api/generate_keys`
+* **Endpoint**: `POST /api/keys`
 * **Description**: Generate key pair and store in `/.tfc/`
 * **Args**:
-    * `name`: Unique name of keypair. Used for local storage.
+    * `keyname`: Unique name of keypair. Used for local storage.
 
 ---
 
@@ -54,3 +53,11 @@
 * **Description**: Get blockchain (block list) of node..
 
 ---
+
+
+## cloud todo:
+- monitoring
+    - cpu
+- logging
+- simulation for attack:
+    - mining

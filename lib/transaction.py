@@ -1,15 +1,9 @@
 from typing import List
+from typing import Tuple
 from dataclasses import dataclass
 from lib.utils import hash_sha256
 from nacl.signing import SigningKey
 from nacl.encoding import HexEncoder
-"""
-TODO:
-    * genesis transaction
-    * coinbase transactions
-    * txin signature
-    * transaction id
-"""
 
 
 @dataclass
@@ -35,16 +29,21 @@ class Transaction:
         pass
 
 
-def build_transaction(user_utxos: List['UTXO'], amount: int, tx_fee: int,
-                      address: str, private_key: str) -> Transaction:
-    txouts: List[TxOut] = [TxOut(address, amount)]
+def build_transaction(user_utxos: List['UTXO'],
+                      address_amount: List[Tuple[str, int]],
+                      private_key: str) -> Transaction:
+    txouts: List[TxOut] = [
+        TxOut(address, amount) for address, amount in address_amount
+    ]
     signingkey = SigningKey(private_key.encode('utf-8'), HexEncoder)
     tx_id = hash_sha256([(utxo.tx_id, utxo.txout_index)
                          for utxo in user_utxos] +
                         [(txout.address, txout.amount) for txout in txouts])
-    signature: str = signingkey.sign(tx_id.encode('utf-8'), HexEncoder)
-    txins: List[TxIn] = [(utxo.tx_id, utxo.txout_index, signature)
-                         for utxo in user_utxos]
+    signature: str = signingkey.sign(tx_id.encode('utf-8'),
+                                     encoder=HexEncoder).decode('utf-8')
+    txins: List[TxIn] = [
+        TxIn(utxo.tx_id, utxo.txout_index, signature) for utxo in user_utxos
+    ]
     tx = Transaction(tx_id, txins, txouts)
     return tx
 

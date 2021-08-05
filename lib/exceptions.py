@@ -1,6 +1,7 @@
 class InvalidBlock(Exception):
     pass
 
+
 class KeysExist(Exception):
     pass
 
@@ -18,4 +19,8 @@ class WorseBlockchain(Exception):
 
 
 class NotEnoughTransactions(Exception):
+    msg = "Not enought transactions to build a block."
+
+
+class UnsuccessfulPatch(Exception):
     pass

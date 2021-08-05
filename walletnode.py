@@ -1,12 +1,15 @@
 from flask import Flask
 from flask import render_template
+from flask import abort
 from flask import Blueprint
 from flask import request
 from lib.p2p import P2P
+from lib.wallet import Wallet
 from lib.transaction import build_transaction
+from lib.constants import SUCCESSFUL_PATCH
 from nacl.signing import SigningKey
 from pathlib import Path
-from lib.wallet import Wallet
+import jsonpickle
 import logging
 
 app = Flask(__name__)
@@ -21,40 +24,61 @@ wallet = Wallet()
 @api.route('/transaction', methods=['POST'])
 def transaction():
     """ Broadcast transaction to peers. """
-    peers = p2p.get_k_best(len(p2p.peers))
-    address = request.args.get('address')
-    amount = request.args.get('amount')
-    tx_fee = request.args.get('tx_fee')
-    private_key = request.args.get('private_key')
+    data = jsonpickle.decode(request.get_data())
+    address = data['address']
+    amount = data['amount']
+    keyname = data['keyname']
 
-    my_balance = peers[0].balance(address)
-    if my_balance <= amount + tx_fee:
+    pkplus, pkminus = wallet.keys(keyname)
+
+    my_balance = p2p.query('/balance', address=pkplus)['balance']
+    if my_balance < amount:
         abort(404, description='Not enough funds.')
 
-    my_utxo = peers[0].get_utxo_sum(address, amount + tx_fee)
-    assert len(my_utxo) != 0
+    my_utxo = p2p.query('/find-utxos', address=pkplus, amount=amount)['utxos']
+    rem = sum(utxo.amount for utxo in my_utxo) - amount
+    address_amount = [(address, amount)]
 
-    tx = build_transaction(my_utxo, amount, tx_fee, address, private_key)
-    for peer in peers:
-        peer.send_transaction(tx)
+    assert rem >= 0
+
+    if rem > 0:
+        address_amount.append((pkplus, rem))
+
+    tx = build_transaction(my_utxo, address_amount, pkminus)
+    try:
+        p2p.broadcast('/transaction-pool', transaction=tx)
+        return SUCCESSFUL_PATCH
+    except UnsuccessfulPatch:
+        payload = jsonpickle.encode(
+            {'message': 'Transaction wasn\'t accepted by the network.'})
+        return payload, 420, {'ContentType': 'application/json'}
 
 
-@api.route('/generate-keys', methods=['POST'])
-def generate_keys():
-    """ Generate private signing key. """
-    name = request.args.get('name')
-    logging.warning(name)
-    keys_path = wallet.create_keys(name)
-    return str(keys_path)
+@api.route('/keys', methods=['GET', 'POST'])
+def keys():
+    if request.method == 'GET':
+        payload = jsonpickle.encode({'keynames': wallet.keynames()})
+        return payload, 200, {'Content-Type': 'application/json'}
+    elif request.method == 'POST':
+        data = request.get_data()
+        keyname = jsonpickle.decode(data)['keyname']
+        keypath = wallet.create_keys(keyname)
+        # TODO: handle duplicated keys
+        payload = jsonpickle.encode({'keypath': str(keypath)})
+        return payload, 200, {'Content-Type': 'application/json'}
 
 
 @api.route('/balance', methods=['GET'])
 def balance():
     """ Ask peers for balance. """
-    peer = p2p.get_k_best(1)[0]
     address = request.args.get('address')
-    return {'balance': peer.balance(address)}
+    balance = p2p.query('/balance', address=address)['balance']
+    payload = jsonpickle.encode({'balance': balance})
+    return payload, 200, {'Content-Type': 'application/json'}
 
 
 app.register_blueprint(api)
 print(app.url_map)
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=8050, debug=True)

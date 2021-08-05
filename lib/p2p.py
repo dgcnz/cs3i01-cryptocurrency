@@ -1,45 +1,71 @@
 from typing import List
 from dataclasses import dataclass
+from dataclasses import field
 from lib.utxoset import UTXO
+from lib.block import Block
+from lib.exceptions import UnsuccessfulPatch
+from urllib.parse import urlparse
 import requests
+import jsonpickle
+import logging
+import json
+import yaml
+import os
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class Peer:
-    hostname: str
-    port: int
+    uri: str
 
-    def address(self) -> str:
-        return f'{self.hostname}:{self.port}'
+    def get(self, api_endpoint: str, **kwargs):
+        params = {k: str(v) for k, v in kwargs.items()}
+        r = requests.get(self.uri + '/api' + api_endpoint, params=params)
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            logger.error('Error: ' + str(e))
+            return None
+        logger.info(f'{api_endpoint} {kwargs} {r.text}')
+        return jsonpickle.decode(r.text)
 
-    def difficulty(self) -> int:
-        """ Get cummulative difficulty of peer's blockchain. """
-        r = requests.get(self.address() + '/difficulty')
-        if r.status_code == requests.codes.ok:
-            return int(r.text)
-        return 0
+    def patch(self, api_endpoint: str, **kwargs):
+        r = requests.patch(self.uri + '/api' + api_endpoint,
+                           data=jsonpickle.dumps(kwargs))
 
-    def send_transaction(self, address: str, amount: int):
-        """ Send transaction to peer. """
-        pass
+        if r.status_code == 420:
+            raise UnsuccessfulPatch()
 
-    def balance(self, address: str) -> int:
-        """ Get address' balance from peer. """
-        pass
-
-    def utxo_sum(self, address: str, amount: int) -> List[UTXO]:
-        """ Get list of unspent transactions from address with accumulated value greater or equal than amount from peer. """
-        pass
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            logger.error('Error: ' + str(e))
 
 
 class P2P:
-    peers: List[Peer] = []
+    peers: List[Peer]
 
     def __init__(self):
-        # query iptables
-        pass
+        self.peers = list()
+        raw_peers = os.environ.get('PEERS')
+        if raw_peers is not None:
+            for peer in raw_peers.split(' '):
+                self.peers.append(Peer(peer))
 
-    def get_k_best(self, k: int) -> List[Peer]:
-        """ Get k best peers """
-        self.peers.sort(key=lambda peer: peer.difficulty(), reverse=True)
-        return self.peers[:k]
+    def get_peers(self) -> List[Peer]:
+        self.sort()
+        return self.peers
+
+    def query(self, api_endpoint: str, **kwargs):
+        self.sort()
+        logger.info(f'Querying peer {self.peers[0]}')
+        return self.peers[0].get(api_endpoint, **kwargs)
+
+    def broadcast(self, api_endpoint: str, **kwargs):
+        for peer in self.peers:
+            peer.patch(api_endpoint, **kwargs)
+
+    def sort(self):
+        self.peers.sort(key=lambda peer: peer.get('/difficulty')['difficulty'],
+                        reverse=True)

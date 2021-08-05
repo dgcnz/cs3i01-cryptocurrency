@@ -3,6 +3,7 @@ from nacl.signing import SigningKey
 from nacl.encoding import HexEncoder
 from lib.exceptions import KeysExist
 from typing import Tuple
+from typing import List
 import yaml
 
 TFC_PATH: Path
@@ -13,11 +14,11 @@ with open("config.yaml", 'r') as f:
 
 
 class Wallet:
-    def create_keys(self, name: str) -> Path:
+    def create_keys(self, keyname: str) -> Path:
         # TODO passphrase encryption
         pkminus = SigningKey.generate()
         pkplus = pkminus.verify_key
-        key_path = TFC_PATH / name
+        key_path = TFC_PATH / keyname
         if key_path.is_file():
             raise KeysExist()
 
@@ -37,3 +38,7 @@ class Wallet:
 
     def keys(self, name) -> Tuple[str, str]:
         return (self.pkplus(name), self.pkminus(name))
+
+    def keynames(self) -> List[str]:
+        keys = [path.stem for path in TFC_PATH.glob('*.pub')]
+        return keys
