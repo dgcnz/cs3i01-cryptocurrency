@@ -41,10 +41,8 @@ app.locals.formatters = {
 const getBlocks = async () => {
   let blocks;
   try {
-    const {
-      data: { blockchain },
-    } = await axios.get(`${apiUrl}/blockchain`);
-    blocks = blockchain;
+    const response = await axios.get(`${apiUrl}/blockchain`);
+    blocks = response.data.blockchain;
   } catch (e) {
     blocks = [];
   }
@@ -53,6 +51,7 @@ const getBlocks = async () => {
       transaction.type = transaction.txins.length ? "regular" : "reward";
     })
   );
+
   return blocks;
 };
 
@@ -122,18 +121,23 @@ app.post("/key", async (req, res) => {
 });
 
 const getBalances = async () => {
+  const getBalance = async (address) => {
+    let balance;
+    try {
+      const response = await axios.get(`${apiUrl}/balance?address=${address}`);
+      balance = response.data.balance;
+    } catch (e) {
+      balance = -1;
+    }
+    return balance;
+  };
   let balances;
   try {
-    const {
-      data: { keys },
-    } = await axios.get(`${apiUrl}/keys`);
-    await _.forEach(keys, async (key) => {
-      const response = await axios.get(
-        `${apiUrl}/balance?address=${key.address}`
-      );
-      key.balance = response.data.balance;
-    });
-    balances = keys;
+    const response = await axios.get(`${apiUrl}/keys`);
+    balances = response.data.keys;
+    for (let i = 0; i < balances.length; ++i) {
+      balances[i].balance = await getBalance(balances[i].address);
+    }
   } catch (e) {
     balances = [];
   }
