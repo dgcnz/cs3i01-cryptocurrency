@@ -1,0 +1,24 @@
+extends base.pug
+
+block content
+    section.section
+        .container
+            .level
+                .level-left
+                    h2.title.is-3 #{pageTitle}
+            hr
+            if success
+                .notification.is-success Success!
+            if error
+                .notification.is-danger Error :(
+            form(action='/key', method='POST')
+                .field
+                    .label 
+                        | Keyname
+                    .control
+                        input.input(type='text', name='keyname', value='')
+                    .help
+                        | The name of the keypair to create
+                .field
+                    button.button.is-primary(type='submit', value='Submit')
+                        | Generate

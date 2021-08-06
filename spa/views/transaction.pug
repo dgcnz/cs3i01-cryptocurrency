@@ -5,9 +5,13 @@ block content
         .container
             .level
                 .level-left
-                    h2.title.is-3 Transaction
+                    h2.title.is-3 #{pageTitle}
             hr
-            form(action='/make_transaction', method='POST')
+            if success
+                .notification.is-success Success!
+            if error
+                .notification.is-danger Error :(
+            form(action='/transaction', method='POST')
                 .field
                     .label
                         | Address
@@ -26,7 +30,11 @@ block content
                     .label 
                         | Keyname
                     .control
-                        input.input(type='text', name='keyname', value='')
+                        .select.is-fullwidth
+                            select(name='keyname')
+                                each keyname in keynames
+                                    if keyname != 'genesis'
+                                        option(value='#{keyname}') #{keyname}
                     .help
                         | Keyname from where to collect funds
                 .field
