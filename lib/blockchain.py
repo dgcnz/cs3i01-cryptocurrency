@@ -61,7 +61,10 @@ class Blockchain:
 
     def is_chain_valid(self) -> bool:
         """ Checks blockchain's validity. """
-        pass
+        for i in range(1, len(self.blockchain)):
+            if not self.blockchain[i].valid(self.blockchain[i - 1]):
+                return False
+        return True
 
     def difficulty(self) -> int:
         """ Checks total difficulty of a blockchain. """
