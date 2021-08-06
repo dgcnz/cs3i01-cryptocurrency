@@ -56,6 +56,11 @@ app.post(
   upload.fields([{ name: "keyname" }]),
   async (req, res) => {
     console.log(req.body);
+    const address = req.body.address
+    const amount = req.body.amount
+    const keyname = req.body.keyname
+    console.log(address, amount, keyname)
+    // await axios.get("http://localhost:8000/api/transaction")
     res.send("hola");
   }
 );
