@@ -54,6 +54,17 @@
 
 ---
 
+## Testing
+
+```bash
+source env/bin/activate
+
+PEERS='http://0.0.0.0:8000' python walletnode.py
+python minernode.py
+
+python -m unittest test/test_toficoin.py
+```
+
 
 ## cloud todo:
 - monitoring

@@ -14,12 +14,12 @@ with open("config.yaml", 'r') as f:
 
 
 class Wallet:
-    def create_keys(self, keyname: str) -> Path:
+    def create_keys(self, keyname: str, overwrite=False) -> Path:
         # TODO passphrase encryption
         pkminus = SigningKey.generate()
         pkplus = pkminus.verify_key
         key_path = TFC_PATH / keyname
-        if key_path.is_file():
+        if key_path.is_file() and not overwrite:
             raise KeysExist()
 
         key_path.write_text(pkminus.encode(encoder=HexEncoder).decode())
