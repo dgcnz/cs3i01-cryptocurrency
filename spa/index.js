@@ -1,7 +1,8 @@
-const express = require("express");
 const axios = require("axios");
+const express = require("express");
 const path = require("path");
 const swaggerUi = require("swagger-ui-express");
+const timeago = require("timeago.js");
 
 const swaggerDocument = require("./swagger.json");
 
@@ -14,7 +15,7 @@ app.set("views", path.join(__dirname, "views"));
 app.locals.formatters = {
   time: (rawTime) => {
     const timeInMS = new Date(rawTime * 1000);
-    return `${timeInMS.toLocaleString()}`;
+    return `${timeInMS.toLocaleString()} - ${timeago.format(timeInMS)}`;
   },
   hash: (hashString) => {
     return hashString != "0"
@@ -25,11 +26,19 @@ app.locals.formatters = {
       : "<empty>";
   },
   amount: (amount) => amount.toLocaleString(),
+  id: (id) => id.slice(0, 6),
 };
-app.get("/", async function (req, res) {
+app.get("/", async (req, res) => {
   const {
     data: { blockchain: blocks },
   } = await axios.get("http://localhost:8000/api/blockchain");
+
+  blocks.forEach((block) =>
+    block.data.forEach((transaction) => {
+      transaction.type = transaction.txins.length ? "regular" : "reward";
+    })
+  );
+
   res.render("blockchain", { blocks, pageTitle: "Blockchain" });
 });
 

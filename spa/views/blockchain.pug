@@ -6,6 +6,12 @@ block content
             .level
                 .level-left
                     h2.title.is-3 Blockchain
+                .level-right
+                    .tags.has-addons
+                        span.tag Type
+                        span.tag.is-primary Regular
+                        span.tag.is-warning Fee
+                        span.tag.is-danger Reward
             hr
             .columns.is-multiline
                 each block in blocks                    
@@ -29,20 +35,21 @@ block content
                                     hr
                                     if block.index > 0
                                         each transaction in block.data
-                                            p.subtitle.is-6
-                                            | #{transaction.id}
+                                            code.tooltip
+                                                | #{formatters.hash(transaction.id)}
+                                                span.tooltiptext #{transaction.id}
                                             if transaction.txins.length > 0 || transaction.txouts.length > 0
-                                                div.notification
+                                                - var classByType = { 'regular': 'is-primary', 'fee': 'is-warning', 'reward': 'is-danger' }
+                                                div.notification(class=`${classByType[transaction.type]}`)
                                                     p
                                                         each input in transaction.txins
                                                             p
                                                                 span.icon.has-text-white
                                                                     i.fas.fa-arrow-right(data-fa-transform="rotate-45")
-                                                                | #{formatters.amount(input.amount)}
-                                                                |  from 
+                                                                | points to transaction #{formatters.id(input.tx_id)} output #{input.txout_index}
                                                                 code.tooltip
-                                                                    | #{formatters.hash(input.address)}
-                                                                    span.tooltiptext #{input.address}
+                                                                    | #{formatters.hash(input.signature)}
+                                                                    span.tooltiptext #{input.signature}
                                                     p                                                            
                                                         each output in transaction.txouts
                                                             p

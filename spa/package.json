@@ -13,6 +13,7 @@
     "express": "^4.17.1",
     "nodemon": "^2.0.12",
     "pug": "^3.0.2",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "timeago.js": "^4.0.2"
   }
 }
