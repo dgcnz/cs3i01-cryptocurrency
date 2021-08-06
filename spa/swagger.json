@@ -99,10 +99,10 @@
                 "py/object": {
                     "type": "string"
                 },
-                "address": {
+                "tx_id": {
                     "type": "string"
                 },
-                "amount": {
+                "txout_index": {
                     "type": "integer"
                 }
             }
