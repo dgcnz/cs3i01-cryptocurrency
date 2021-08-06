@@ -1,17 +1,19 @@
 const _ = require("lodash");
 const axios = require("axios");
 const express = require("express");
-const multer = require("multer");
 const path = require("path");
 const swaggerUi = require("swagger-ui-express");
 const timeago = require("timeago.js");
 
 const swaggerDocument = require("./swagger.json");
-const upload = multer();
 
 const app = express();
 const port = 3000;
 const apiUrl = `http://${process.env.BACKEND_URL}/api`;
+
+/* form data handling */
+app.use(express.json()); // Used to parse JSON bodies
+app.use(express.urlencoded()); //Parse URL-encoded bodies
 
 /* pug views */
 app.set("view engine", "pug");
@@ -47,30 +49,68 @@ app.get("/", async (req, res) => {
     blocks = [];
   }
 
-  blocks.forEach((block) =>
-    block.data.forEach((transaction) => {
+  _.forEach(blocks, (block) =>
+    _.forEach(block.data, (transaction) => {
       transaction.type = transaction.txins.length ? "regular" : "reward";
     })
   );
 
   res.render("blockchain", { blocks, pageTitle: "Blockchain" });
 });
+
 app.get("/transaction", async (req, res) => {
-  res.render("transaction", { pageTitle: "Transaction" });
-});
-app.post(
-  `${apiUrl}/make_transaction`,
-  upload.fields([{ name: "keyname" }]),
-  async (req, res) => {
-    console.log(req.body);
-    const address = req.body.address
-    const amount = req.body.amount
-    const keyname = req.body.keyname
-    console.log(address, amount, keyname)
-    // await axios.get("http://localhost:8000/api/transaction")
-    res.send("hola");
+  let keynames;
+  try {
+    const response = await axios.get(`${apiUrl}/keys`);
+    keynames = response.data.keynames;
+  } catch (e) {
+    keynames = ["Error :("];
   }
-);
+
+  res.render("transaction", { pageTitle: "Transaction", keynames });
+});
+
+app.post("/transaction", async (req, res) => {
+  let keynames;
+  try {
+    const response = await axios.get(`${apiUrl}/keys`);
+    keynames = response.data.keynames;
+  } catch (e) {
+    keynames = ["Error :("];
+  }
+
+  let status;
+  try {
+    await axios.post(`${apiUrl}/transaction`);
+    status = "success";
+  } catch (e) {
+    status = "error";
+  }
+
+  res.render("transaction", {
+    pageTitle: "Transaction",
+    keynames,
+    [status]: true,
+  });
+});
+
+app.get("/key", async (req, res) => {
+  res.render("key", { pageTitle: "Key" });
+});
+
+app.post("/key", async (req, res) => {
+  let status;
+  try {
+    await axios.post(`${apiUrl}/keys`, {
+      keyname: req.body.keyname,
+    });
+    status = "success";
+  } catch (e) {
+    status = "error";
+  }
+
+  res.render("key", { pageTitle: "Key", [status]: true });
+});
 
 /* api docs */
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
