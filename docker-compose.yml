@@ -1,41 +1,57 @@
 services:
-  node1:
-    build: .
-    image: mlovatonv/toficoin:latest
+  node1_backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    image: mlovatonv/toficoin_backend:latest
     environment:
       - FLASK_APP=walletnode.py
-      - HOST_PORT=3001
-      - NAME=node1
+      - PEERS=node2_backend
+      - PORT=8000
     ports:
-      - "3001:5000"
+      - "3001:8000"
     networks:
       nodes:
         aliases:
-          - node1
-  node2:
-    image: mlovatonv/toficoin:latest
+          - node1_backend
+
+  node1_frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    image: mlovatonv/toficoin_frontend:latest
     environment:
-      - FLASK_APP=walletnode.py
-      - HOST_PORT=3002
-      - NAME=node2
+      - BACKEND_URL=node1_backend:8000
     ports:
-      - "3002:5000"
+      - "3002:3000"
     networks:
       nodes:
         aliases:
-          - node2
-  node3:
-    image: mlovatonv/toficoin:latest
+          - node1_frontend
+
+  node2_backend:
+    image: mlovatonv/toficoin_backend:latest
     environment:
       - FLASK_APP=minernode.py
-      - HOST_PORT=3003
-      - NAME=node3
+      - PEERS=node1_backend
+      - PORT=8000
     ports:
-      - "3003:5000"
+      - "3003:8000"
     networks:
       nodes:
         aliases:
-          - node3
+          - node2_backend
+
+  node2_frontend:
+    image: mlovatonv/toficoin_frontend:latest
+    environment:
+      - BACKEND_URL=node2_backend:8000
+    ports:
+      - "3004:3000"
+    networks:
+      nodes:
+        aliases:
+          - node2_frontend
 
 networks:
   nodes:

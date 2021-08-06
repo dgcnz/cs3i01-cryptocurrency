@@ -11,6 +11,7 @@ const upload = multer();
 
 const app = express();
 const port = 3000;
+const apiUrl = `http://${process.env.BACKEND_URL}/api`;
 
 /* pug views */
 app.set("view engine", "pug");
@@ -36,9 +37,15 @@ app.locals.formatters = {
 
 /* server */
 app.get("/", async (req, res) => {
-  const {
-    data: { blockchain: blocks },
-  } = await axios.get("http://localhost:8000/api/blockchain");
+  let blocks;
+  try {
+    const {
+      data: { blockchain },
+    } = await axios.get(`${apiUrl}/blockchain`);
+    blocks = blockchain;
+  } catch (e) {
+    blocks = [];
+  }
 
   blocks.forEach((block) =>
     block.data.forEach((transaction) => {
@@ -52,7 +59,7 @@ app.get("/transaction", async (req, res) => {
   res.render("transaction", { pageTitle: "Transaction" });
 });
 app.post(
-  "/make_transaction",
+  `${apiUrl}/make_transaction`,
   upload.fields([{ name: "keyname" }]),
   async (req, res) => {
     console.log(req.body);
@@ -69,6 +76,8 @@ app.post(
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /* init */
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(
+    `${process.env.BACKEND_URL} app listening at http://localhost:${port}`
+  );
 });
