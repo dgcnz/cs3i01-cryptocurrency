@@ -16,22 +16,246 @@
         "application/json"
     ],
     "paths": {
-        "/api/blockchain": {
+        "/api/latest-block": {
             "get": {
                 "tags": [
-                    "blockchain"
+                    "miner_node"
                 ],
-                "summary": "Get all blocks",
+                "summary": "Get latest block.",
                 "description": "",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Block"
+                            "type": "object",
+                            "properties": {
+                                "block": {
+                                    "$ref": "#/definitions/Block"
+                                }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/balance": {
+            "get": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Get balance of given address.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "path",
+                    "name": "address",
+                    "description": "The public key from which the balance will be computed.",
+                    "required": true,
+                    "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "balance": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/difficulty": {
+            "get": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Get difficulty of local blockchain.",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "difficulty": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/blockchain": {
+            "get": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Get all blocks.",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "blockchain": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/Block"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Attempt to replace blockchain with given blockchain.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "body",
+                    "name": "blockchain",
+                    "description": "The blockchain that will replace the local one.",
+                    "required": true,
+                    "schema":{
+                        "type": "object",
+                        "properties": {
+                            "blockchain": {
+                                "type": "array",
+                                "items": {
+                                    "$ref" : "#/definitions/Block"
+                                }
+                            }
+                        }
+
+                    }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/find-utxos": {
+            "get": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Find enought unspent transaction outputs for a given amount and address.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "path",
+                    "name": "address",
+                    "description": "The public key from which the unspent transaction outputs will be searched.",
+                    "required": true,
+                    "type": "string"
+                    },
+                    {
+                    "in": "path",
+                    "name": "amount",
+                    "description": "The lower bound on the amount of coins the transaction outputs must sum.",
+                    "required": true,
+                    "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "utxos": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref" : "#/definitions/UnspentTransactionOutput"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction-pool": {
+            "get": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Get unconfirmed transactions.",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "txpool": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/Transaction"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Add new unconfirmed transaction.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "body",
+                    "name": "transaction",
+                    "description": "The transaction to include in the pool.",
+                    "required": true,
+                    "schema":{
+                        "type": "object",
+                        "properties": {
+                            "transaction": {
+                                "$ref" : "#/definitions/Transaction"
+                            }
+                        }
+
+                    }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/mine": {
+            "post": {
+                "tags": [
+                    "miner_node"
+                ],
+                "summary": "Mine transactions from local transaction pool.",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "420": {
+                        "description": "Error: NotEnoughTransactions or UnacceptedBroadcast"
                     }
                 }
             }
@@ -42,7 +266,8 @@
             "type": "object",
             "properties": {
                 "py/object": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": ["lib.block.Block"]
                 },
                 "index": {
                     "type": "integer"
@@ -74,7 +299,8 @@
             "type": "object",
             "properties": {
                 "py/object": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": ["lib.transaction.Transaction"]
                 },
                 "id": {
                     "type": "string"
@@ -97,7 +323,8 @@
             "type": "object",
             "properties": {
                 "py/object": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": ["lib.transaction.TxIn"]
                 },
                 "tx_id": {
                     "type": "string"
@@ -111,7 +338,29 @@
             "type": "object",
             "properties": {
                 "py/object": {
+                    "type": "string",
+                    "enum": ["lib.transaction.TxOut"]
+                },
+                "address": {
                     "type": "string"
+                },
+                "amount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "UnspentTransactionOutput": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string",
+                    "enum": ["lib.utxoset.UTXO"]
+                },
+                "tx_id": {
+                    "type": "string"
+                },
+                "txout_index": {
+                    "type": "integer"
                 },
                 "address": {
                     "type": "string"
