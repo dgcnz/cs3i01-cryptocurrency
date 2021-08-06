@@ -1,0 +1,34 @@
+extends base.pug
+
+block content
+    section.section
+        .container
+            .level
+                .level-left
+                    h2.title.is-3 Transaction
+            hr
+            form(action='/make_transaction', method='POST')
+                .field
+                    .label
+                        | Address
+                    .control
+                        input.input(type='text', name='address', value='')
+                    .help
+                        | Public key of recipient
+                .field
+                    .label 
+                        | Amount 
+                    .control
+                        input.input(type='number', name='amount', value='')
+                    .help
+                        | Amount of money to transfer
+                .field
+                    .label 
+                        | Keyname
+                    .control
+                        input.input(type='text', name='keyname', value='')
+                    .help
+                        | Keyname from where to collect funds
+                .field
+                    button.button.is-primary(type='submit', value='Submit')
+                        | Transfer
