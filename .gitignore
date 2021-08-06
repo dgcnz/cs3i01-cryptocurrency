@@ -2,3 +2,5 @@ env/
 .vim/
 __pycache__/
 .vscode/
+.tfc/test.pub
+.tfc/test
