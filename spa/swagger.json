@@ -1,0 +1,125 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Visualize the blockchain by accessing <a href='/' target='_blank'>here</a>.",
+        "version": "0.0.1",
+        "title": "Toficoin API"
+    },
+    "basePath": "/",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/api/blockchain": {
+            "get": {
+                "tags": [
+                    "blockchain"
+                ],
+                "summary": "Get all blocks",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Block"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Block": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string"
+                },
+                "index": {
+                    "type": "integer"
+                },
+                "bhash": {
+                    "type": "string"
+                },
+                "prev_bhash": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Transaction"
+                    }
+                },
+                "difficulty": {
+                    "type": "integer"
+                },
+                "nonce": {
+                    "type": "integer"
+                }
+            }
+        },
+        "Transaction": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "txins": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransactionInput"
+                    }
+                },
+                "txouts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransactionOutput"
+                    }
+                }
+            }
+        },
+        "TransactionInput": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "TransactionOutput": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}
