@@ -318,18 +318,16 @@
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "keynames": {
+                                "keys": {
                                     "type": "array",
                                     "items": {
-                                        "schema": {
-                                            "type": "object",
-                                            "properties":{
-                                                "keyname" : {
-                                                    "type":"string"
-                                                },
-                                                "address": {
-                                                    "type":"string"
-                                                }
+                                        "type": "object",
+                                        "properties":{
+                                            "keyname" : {
+                                                "type":"string"
+                                            },
+                                            "address": {
+                                                "type":"string"
                                             }
                                         }
                                     }
