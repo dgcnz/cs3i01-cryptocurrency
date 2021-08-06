@@ -46,10 +46,10 @@ block content
                                                             p
                                                                 span.icon.has-text-white
                                                                     i.fas.fa-arrow-right(data-fa-transform="rotate-45")
-                                                                | points to transaction #{formatters.id(input.tx_id)} output #{input.txout_index}
+                                                                | points to transaction output ##{input.txout_index} in 
                                                                 code.tooltip
-                                                                    | #{formatters.hash(input.signature)}
-                                                                    span.tooltiptext #{input.signature}
+                                                                    | #{formatters.hash(input.tx_id)}
+                                                                    span.tooltiptext #{input.tx_id}
                                                     p                                                            
                                                         each output in transaction.txouts
                                                             p
