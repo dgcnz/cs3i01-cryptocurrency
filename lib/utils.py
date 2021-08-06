@@ -7,7 +7,8 @@ from typing import Any
 
 
 def hex_to_bin(hexstring: str) -> str:
-    return bin(int(hexstring, 16))[2:]
+    hsize = len(hexstring) * 4
+    return (bin(int(hexstring, 16))[2:]).zfill(hsize)
 
 
 def hash_sha256(args: List[Any]) -> str:
