@@ -1,0 +1,20 @@
+extends base.pug
+
+block content
+    section.section
+        .container
+            .level
+                .level-left
+                    h2.title.is-3 #{pageTitle}
+            hr
+            table.table.is_striped
+                thead
+                    tr
+                        th Keyname
+                        th Address
+                        th Balance
+                tbody 
+                    each balance in balances
+                        tr 
+                            each column in columns
+                                td #{balance[column]}
