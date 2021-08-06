@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Visualize the blockchain by accessing <a href='/blockchain' target='_blank'>here</a>.",
+        "description": "Visualize the blockchain by accessing <a href='/' target='_blank'>here</a>.",
         "version": "0.0.1",
         "title": "Toficoin API"
     },
@@ -16,7 +16,7 @@
         "application/json"
     ],
     "paths": {
-        "/blockchain/blocks": {
+        "/api/blockchain": {
             "get": {
                 "tags": [
                     "blockchain"
@@ -35,104 +35,89 @@
                     }
                 }
             }
-        },
-        "/operator/wallets/{walletId}/addresses": {
-            "get": {
-                "tags": [
-                    "operator"
-                ],
-                "summary": "Get all addresses of a wallet",
-                "description": "",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "walletId",
-                        "description": "Wallet id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Address"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "operator"
-                ],
-                "summary": "Create a new address",
-                "description": "",
-                "parameters": [
-                    {
-                        "in": "header",
-                        "name": "password",
-                        "description": "Wallet password",
-                        "required": true,
-                        "type": "string",
-                        "format": "password"
-                    },
-                    {
-                        "in": "path",
-                        "name": "walletId",
-                        "description": "Wallet id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "address": {
-                                    "$ref": "#/definitions/Address"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    }
-                }
-            }
         }
     },
     "definitions": {
         "Block": {
             "type": "object",
             "properties": {
+                "py/object": {
+                    "type": "string"
+                },
                 "index": {
                     "type": "integer"
                 },
-                "previousHash": {
+                "bhash": {
+                    "type": "string"
+                },
+                "prev_bhash": {
                     "type": "string"
                 },
                 "timestamp": {
                     "type": "integer"
                 },
                 "data": {
-                    "type": "object"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Transaction"
+                    }
                 },
-                "hash": {
+                "difficulty": {
+                    "type": "integer"
+                },
+                "nonce": {
+                    "type": "integer"
+                }
+            }
+        },
+        "Transaction": {
+            "type": "object",
+            "properties": {
+                "py/object": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "txins": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransactionInput"
+                    }
+                },
+                "txouts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransactionOutput"
+                    }
+                }
+            }
+        },
+        "TransactionInput": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "TransactionOutput": {
+            "type": "object",
+            "properties": {
+                "py/object": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "integer"
                 }
             }
         }
