@@ -153,6 +153,62 @@ app.get("/balance", async (req, res) => {
   });
 });
 
+const getTransactionPool = async () => {
+  let transactionPool;
+  try {
+    const response = await axios.get(`${apiUrl}/transaction-pool`);
+    if (_.isEmpty(response.data.txpool)) {
+      transactionPool = { txins: [], txouts: [] };
+    } else {
+      transactionPool = {
+        txins: response.data.txpool.txins,
+        txouts: response.data.txpool.txouts,
+      };
+    }
+  } catch (e) {
+    transactionPool = { txins: [], txouts: [] };
+  }
+  return transactionPool;
+};
+
+app.get("/transaction-pool", async (req, res) => {
+  const { txins, txouts } = await getTransactionPool();
+  console.log(txins);
+  console.log(txouts);
+  res.render("transaction-pool", {
+    pageTitle: "Transaction Pool",
+    txinColumns: ["tx_id", "txout_index"],
+    txoutColumns: ["address", "amount"],
+    txins,
+    txouts,
+  });
+});
+
+const mine = async () => {
+  let status;
+  try {
+    await axios.post(`${apiUrl}/mine`);
+    status = "success";
+  } catch (e) {
+    status = "error";
+  }
+  return status;
+};
+
+app.post("/transaction-pool", async (req, res) => {
+  const status = await mine();
+
+  const { txins, txouts } = await getTransactionPool();
+  res.render("transaction-pool", {
+    pageTitle: "Transaction Pool",
+    txinColumns: ["tx_id", "txout_index"],
+    txoutColumns: ["address", "amount"],
+    txins,
+    txouts,
+    [status]: true,
+  });
+});
+
 /* api docs */
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

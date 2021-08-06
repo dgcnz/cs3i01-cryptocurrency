@@ -1,0 +1,38 @@
+extends base.pug
+
+block content
+    section.section
+        .container
+            .level
+                .level-left
+                    h2.title.is-3 #{pageTitle}
+                .level-right
+                    form(action='/transaction-pool', method='POST')
+                        button.button.is-black.is-medium(type='submit', value='Submit') Mine
+            hr
+            if success
+                .notification.is-success Success!
+            if error
+                .notification.is-danger Error :(
+            h4.title.is-5 Transaction Inputs
+            table.table.is-striped.is-fullwidth
+                thead
+                    tr
+                        th Transaction Id
+                        th Transaction Out Index
+                tbody 
+                    each txin in txins
+                        tr 
+                            each column in txinColumns
+                                td #{txin[column]}
+            h4.title.is-5 Transaction Outputs
+            table.table.is-striped.is-fullwidth
+                thead
+                    tr
+                        th Address
+                        th Amount
+                tbody 
+                    each txout in txouts
+                        tr 
+                            each column in txoutColumns
+                                td #{txout[column]}
