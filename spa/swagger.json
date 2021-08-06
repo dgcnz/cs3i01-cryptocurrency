@@ -259,6 +259,136 @@
                     }
                 }
             }
+        },
+        "/api/transaction": {
+            "post": {
+                "tags": [
+                    "wallet_node"
+                ],
+                "summary": "Broadcast transaction to peer's transaction pools.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "body",
+                    "name": "Transaction data",
+                    "description": "The data necessary to perform the transaction.",
+                    "required": true,
+                    "schema":{
+                        "type": "object",
+                        "properties": {
+                            "address": {
+                                "description": "Public Key of recipient.",
+                                "type": "string"
+                            },
+                            "amount": {
+                                "description": "Amount of coins to be transferred.",
+                                "type": "integer"
+                            },
+                            "keyname": {
+                                "description": "Keyname where to collect funds.",
+                                "type": "string"
+                            }
+                        }
+                    }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "NotEnoughFunds"
+                    },
+                    "420": {
+                        "description": "UnacceptedBroadcast"
+                    }
+                }
+            }
+        },
+        "/api/keys": {
+            "get": {
+                "tags": [
+                    "wallet_node"
+                ],
+                "summary": "Get keynames of saved keys.",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "keynames": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "wallet_node"
+                ],
+                "summary": "Create new pair of keys.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "body",
+                    "name": "keyname",
+                    "description": "The name of the keypair to create.",
+                    "required": true,
+                    "schema":{
+                        "type": "object",
+                        "properties": {
+                            "keyname": {
+                                "type": "string"
+                            }
+                        }
+
+                    }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/balance": {
+            "get": {
+                "tags": [
+                    "wallet_node"
+                ],
+                "summary": "Get balance of given address.",
+                "description": "",
+                "parameters": [
+                    {
+                    "in": "path",
+                    "name": "address",
+                    "description": "The public key from which the balance will be computed.",
+                    "required": true,
+                    "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "balance": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
