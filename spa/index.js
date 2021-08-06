@@ -38,7 +38,7 @@ app.locals.formatters = {
 };
 
 /* server */
-app.get("/", async (req, res) => {
+const getBlocks = async () => {
   let blocks;
   try {
     const {
@@ -48,45 +48,52 @@ app.get("/", async (req, res) => {
   } catch (e) {
     blocks = [];
   }
-
   _.forEach(blocks, (block) =>
     _.forEach(block.data, (transaction) => {
       transaction.type = transaction.txins.length ? "regular" : "reward";
     })
   );
+  return blocks;
+};
 
+app.get("/", async (req, res) => {
+  const blocks = await getBlocks();
   res.render("blockchain", { blocks, pageTitle: "Blockchain" });
 });
 
-app.get("/transaction", async (req, res) => {
+const getKeynames = async () => {
   let keynames;
   try {
     const response = await axios.get(`${apiUrl}/keys`);
-    keynames = response.data.keynames;
+    keynames = _.map(response.data.keys, "keyname");
   } catch (e) {
     keynames = ["Error :("];
   }
+  return keynames;
+};
 
-  res.render("transaction", { pageTitle: "Transaction", keynames });
+app.get("/transaction", async (req, res) => {
+  const keynames = await getKeynames();
+  res.render("transaction", {
+    pageTitle: "Transaction",
+    keynames,
+  });
 });
 
-app.post("/transaction", async (req, res) => {
-  let keynames;
-  try {
-    const response = await axios.get(`${apiUrl}/keys`);
-    keynames = response.data.keynames;
-  } catch (e) {
-    keynames = ["Error :("];
-  }
-
+const postTransaction = async (data) => {
   let status;
   try {
-    await axios.post(`${apiUrl}/transaction`);
+    await axios.post(`${apiUrl}/transaction`, data);
     status = "success";
   } catch (e) {
     status = "error";
   }
+  return status;
+};
 
+app.post("/transaction", async (req, res) => {
+  const keynames = await getKeynames();
+  const status = await postTransaction(req.body);
   res.render("transaction", {
     pageTitle: "Transaction",
     keynames,
@@ -98,18 +105,48 @@ app.get("/key", async (req, res) => {
   res.render("key", { pageTitle: "Key" });
 });
 
-app.post("/key", async (req, res) => {
+const postKey = async (data) => {
   let status;
   try {
-    await axios.post(`${apiUrl}/keys`, {
-      keyname: req.body.keyname,
-    });
+    await axios.post(`${apiUrl}/keys`, data);
     status = "success";
   } catch (e) {
     status = "error";
   }
+  return status;
+};
 
+app.post("/key", async (req, res) => {
+  const status = await postKey(req.body);
   res.render("key", { pageTitle: "Key", [status]: true });
+});
+
+const getBalances = async () => {
+  let balances;
+  try {
+    const {
+      data: { keys },
+    } = await axios.get(`${apiUrl}/keys`);
+    await _.forEach(keys, async (key) => {
+      const response = await axios.get(
+        `${apiUrl}/balance?address=${key.address}`
+      );
+      key.balance = response.data.balance;
+    });
+    balances = keys;
+  } catch (e) {
+    balances = [];
+  }
+  return balances;
+};
+
+app.get("/balance", async (req, res) => {
+  const balances = await getBalances();
+  res.render("balance", {
+    balances,
+    columns: ["keyname", "address", "balance"],
+    pageTitle: "Balance",
+  });
 });
 
 /* api docs */
