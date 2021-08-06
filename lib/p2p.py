@@ -13,6 +13,7 @@ import yaml
 import os
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @dataclass
@@ -54,12 +55,11 @@ class P2P:
                 self.peers.append(Peer(f'http://{peer}:8000'))
 
     def get_peers(self) -> List[Peer]:
-        self.sort()
+        # self.sort()
         return self.peers
 
     def query(self, api_endpoint: str, **kwargs):
-        self.sort()
-        logger.info(f'Querying peer {self.peers[0]}')
+        # self.sort()
         return self.peers[0].get(api_endpoint, **kwargs)
 
     def broadcast(self, api_endpoint: str, **kwargs):
