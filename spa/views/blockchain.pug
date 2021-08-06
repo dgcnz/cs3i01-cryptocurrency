@@ -30,8 +30,8 @@ block content
                                     if block.index > 0
                                         each transaction in block.data
                                             p.subtitle.is-6
-                                            | transaction.id
-                                            if transaction.txins > 0 || transaction.txouts > 0
+                                            | #{transaction.id}
+                                            if transaction.txins.length > 0 || transaction.txouts.length > 0
                                                 div.notification
                                                     p
                                                         each input in transaction.txins

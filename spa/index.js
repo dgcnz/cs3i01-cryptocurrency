@@ -14,7 +14,7 @@ app.set("views", path.join(__dirname, "views"));
 app.locals.formatters = {
   time: (rawTime) => {
     const timeInMS = new Date(rawTime * 1000);
-    return `${timeInMS.toLocaleString()} - ${timeago().format(timeInMS)}`;
+    return `${timeInMS.toLocaleString()}`;
   },
   hash: (hashString) => {
     return hashString != "0"
