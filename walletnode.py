@@ -14,7 +14,10 @@ import logging
 import os
 
 app = Flask(__name__)
-api = Blueprint("api", __name__, template_folder="templates", url_prefix="/api")
+api = Blueprint("api",
+                __name__,
+                template_folder="templates",
+                url_prefix="/api")
 p2p = P2P()
 wallet = Wallet()
 
@@ -48,15 +51,18 @@ def transaction():
         return SUCCESSFUL_PATCH
     except UnsuccessfulPatch:
         payload = jsonpickle.encode(
-            {"message": "Transaction wasn't accepted by the network."}
-        )
+            {"message": "Transaction wasn't accepted by the network."})
         return payload, 420, {"ContentType": "application/json"}
 
 
 @api.route("/keys", methods=["GET", "POST"])
 def keys():
     if request.method == "GET":
-        payload = jsonpickle.encode({"keynames": wallet.keynames()})
+        data = [{
+            "keyname": keyname,
+            "address": wallet.pkplus(keyname)
+        } for keyname in wallet.keynames()]
+        payload = jsonpickle.encode({"keys": data})
         return payload, 200, {"Content-Type": "application/json"}
     elif request.method == "POST":
         data = request.get_data()

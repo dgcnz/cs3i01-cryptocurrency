@@ -33,7 +33,7 @@ services:
     image: mlovatonv/toficoin_backend:latest
     environment:
       - FLASK_APP=minernode.py
-      - PEERS=node1_backend
+      - PEERS=node3_backend
       - PORT=8000
     ports:
       - "3003:8000"
@@ -52,6 +52,30 @@ services:
       nodes:
         aliases:
           - node2_frontend
+
+  node3_backend:
+    image: mlovatonv/toficoin_backend:latest
+    environment:
+      - FLASK_APP=minernode.py
+      - PEERS=node2_backend
+      - PORT=8000
+    ports:
+      - "3005:8000"
+    networks:
+      nodes:
+        aliases:
+          - node3_backend
+
+  node3_frontend:
+    image: mlovatonv/toficoin_frontend:latest
+    environment:
+      - BACKEND_URL=node3_backend:8000
+    ports:
+      - "3006:3000"
+    networks:
+      nodes:
+        aliases:
+          - node3_frontend
 
 networks:
   nodes:

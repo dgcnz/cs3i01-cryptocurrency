@@ -51,7 +51,7 @@ class P2P:
         raw_peers = os.environ.get('PEERS')
         if raw_peers is not None:
             for peer in raw_peers.split(' '):
-                self.peers.append(Peer(peer))
+                self.peers.append(Peer(f'http://{peer}:8000'))
 
     def get_peers(self) -> List[Peer]:
         self.sort()

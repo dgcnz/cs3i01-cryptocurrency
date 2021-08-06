@@ -7,6 +7,8 @@ from lib.constants import SUCCESSFUL_PATCH
 from lib.constants import UNSUCCESSFUL_PATCH
 from lib.exceptions import NotEnoughTransactions
 from lib.exceptions import UnsuccessfulPatch
+from lib.exceptions import InvalidBlockchain
+from lib.exceptions import WorseBlockchain
 from lib.p2p import P2P
 from lib.transaction import build_transaction
 from lib.txpool import TxPool
@@ -18,9 +20,13 @@ import os
 import yaml
 
 app = Flask(__name__)
-api = Blueprint("api", __name__, template_folder="templates", url_prefix="/api")
+api = Blueprint("api",
+                __name__,
+                template_folder="templates",
+                url_prefix="/api")
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 MINER_KEYNAME: str
 COINBASE_AMOUNT: int = 10
 
@@ -60,7 +66,8 @@ def get_blockchain():
         return payload, 200, {"Content-Type": "application/json"}
     elif request.method == "PATCH":
         new_blockchain = Blockchain()
-        new_blockchain.blockchain = jsonpickle.decode(request.get_data())["blockchain"]
+        new_blockchain.blockchain = jsonpickle.decode(
+            request.get_data())["blockchain"]
         try:
             blockchain.replace(new_blockchain)
             return SUCCESSFUL_PATCH
@@ -101,15 +108,16 @@ def mine():
         return payload, 420, {"Content-Type": "application/json"}
 
     block = blockchain.create_block(txchunk)
+    logging.info("Mined block succesfully.")
     try:
         # TODO: check validity before broadcast?
-        peers = p2p.broadcast("/blockchain", blockchain=blockchain.blocks() + [block])
+        peers = p2p.broadcast("/blockchain",
+                              blockchain=blockchain.blocks() + [block])
         blockchain.add_block(block)
         return SUCCESSFUL_PATCH
     except UnsuccessfulPatch:
         payload = jsonpickle.encode(
-            {"message": "Mined block wasn't accepted by the network."}
-        )
+            {"message": "Mined block wasn't accepted by the network."})
         return payload, 420, {"Content-Type": "application/json"}
 
 

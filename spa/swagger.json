@@ -310,7 +310,7 @@
                 "tags": [
                     "wallet_node"
                 ],
-                "summary": "Get keynames of saved keys.",
+                "summary": "Get keynames and public keys of saved keys.",
                 "description": "",
                 "responses": {
                     "200": {
@@ -321,7 +321,17 @@
                                 "keynames": {
                                     "type": "array",
                                     "items": {
-                                        "type": "string"
+                                        "schema": {
+                                            "type": "object",
+                                            "properties":{
+                                                "keyname" : {
+                                                    "type":"string"
+                                                },
+                                                "address": {
+                                                    "type":"string"
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
