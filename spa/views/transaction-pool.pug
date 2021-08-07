@@ -16,11 +16,11 @@ block content
                 .notification.is-danger Error :(
             each transaction in transactionPool
                 if transaction.id
-                    .subtitle.is-6 Transaction Id: 
+                    .title.is-6 Transaction Id: 
                         code.tooltip
                             | #{formatters.hash(transaction.id)}
                             span.tooltiptext #{transaction.id}
-                .title.is-6 Transaction Inputs
+                .subtitle.is-6 Transaction Inputs
                 table.table.is-striped.is-fullwidth
                     thead
                         tr
