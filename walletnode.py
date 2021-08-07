@@ -27,7 +27,7 @@ def transaction():
     """Broadcast transaction to peers."""
     data = jsonpickle.decode(request.get_data())
     address = data["address"]
-    amount = data["amount"]
+    amount = int(data["amount"])
     keyname = data["keyname"]
 
     pkplus, pkminus = wallet.keys(keyname)
