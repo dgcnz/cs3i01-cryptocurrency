@@ -11,7 +11,24 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
 
 ### Arquitectura
 
-![](img/arch.png)
+#### Multicontainer cliente-servidor
+
+- Contenedor 1: Flask application (backend)
+- Contenedor 2: Express application (frontend)
+
+#### Peer-to-peer network
+
+- Networking using a REST API's using http protocol
+- Hard-coded peers (for now)
+- docker-compose for development environment
+
+#### Escalabillidad
+
+- "Trilema de la escalabilidad" de blockchain
+  - Escalabilidad
+  - Seguridad
+  - Descentralización
+- Cada nodo independientemente puede escalar horizontal o verticalmente (Escalabilidad off-chain)
 
 ### Referencias
 
@@ -30,4 +47,4 @@ En el curso de Seguridad en Computacion estamos desarrollando un prototipo de cr
 
 ## Resumen de los pasos necesarios para su ejecución
 
-![](img/steps.png)
+![](images/steps.png)
