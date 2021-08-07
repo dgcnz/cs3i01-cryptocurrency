@@ -15,6 +15,7 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
 
 - Contenedor 1: Flask application (backend)
 - Contenedor 2: Express application (frontend)
+  - API documentation
 
 #### Peer-to-peer network
 
@@ -29,6 +30,23 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
   - Seguridad
   - Descentralización
 - Cada nodo independientemente puede escalar horizontal o verticalmente (Escalabilidad off-chain)
+
+#### Características de seguridad - confiabilidad
+
+- Integrity by proof of work hashes (SHA-256).
+- Ed25519 signatures using NaCL
+- Fixed proof of work difficulty
+- Consistency and peer blockchain validation
+
+#### Monitoreo
+
+- Sentry cloud services
+  - Logs usando python SDK
+
+#### Tolerancia a fallas
+
+- Excepciones
+- Nodos independientes
 
 ### Referencias
 
