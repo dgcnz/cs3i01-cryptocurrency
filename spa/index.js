@@ -153,34 +153,29 @@ app.get("/balance", async (req, res) => {
   });
 });
 
+const emptyTransactionPool = [{ txins: [], txouts: [] }];
 const getTransactionPool = async () => {
   let transactionPool;
   try {
     const response = await axios.get(`${apiUrl}/transaction-pool`);
     if (_.isEmpty(response.data.txpool)) {
-      transactionPool = { txins: [], txouts: [] };
+      transactionPool = emptyTransactionPool;
     } else {
-      transactionPool = {
-        txins: response.data.txpool.txins,
-        txouts: response.data.txpool.txouts,
-      };
+      transactionPool = response.data.txpool;
     }
   } catch (e) {
-    transactionPool = { txins: [], txouts: [] };
+    transactionPool = emptyTransactionPool;
   }
   return transactionPool;
 };
 
 app.get("/transaction-pool", async (req, res) => {
-  const { txins, txouts } = await getTransactionPool();
-  console.log(txins);
-  console.log(txouts);
+  const transactionPool = await getTransactionPool();
   res.render("transaction-pool", {
     pageTitle: "Transaction Pool",
     txinColumns: ["tx_id", "txout_index"],
     txoutColumns: ["address", "amount"],
-    txins,
-    txouts,
+    transactionPool,
   });
 });
 
@@ -197,14 +192,12 @@ const mine = async () => {
 
 app.post("/transaction-pool", async (req, res) => {
   const status = await mine();
-
-  const { txins, txouts } = await getTransactionPool();
+  const transactionPool = await getTransactionPool();
   res.render("transaction-pool", {
     pageTitle: "Transaction Pool",
     txinColumns: ["tx_id", "txout_index"],
     txoutColumns: ["address", "amount"],
-    txins,
-    txouts,
+    transactionPool,
     [status]: true,
   });
 });

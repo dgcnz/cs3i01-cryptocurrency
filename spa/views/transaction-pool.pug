@@ -14,25 +14,31 @@ block content
                 .notification.is-success Success!
             if error
                 .notification.is-danger Error :(
-            h4.title.is-5 Transaction Inputs
-            table.table.is-striped.is-fullwidth
-                thead
-                    tr
-                        th Transaction Id
-                        th Transaction Out Index
-                tbody 
-                    each txin in txins
-                        tr 
-                            each column in txinColumns
-                                td #{txin[column]}
-            h4.title.is-5 Transaction Outputs
-            table.table.is-striped.is-fullwidth
-                thead
-                    tr
-                        th Address
-                        th Amount
-                tbody 
-                    each txout in txouts
-                        tr 
-                            each column in txoutColumns
-                                td #{txout[column]}
+            each transaction in transactionPool
+                if transaction.id
+                    .subtitle.is-6 Transaction Id: 
+                        code.tooltip
+                            | #{formatters.hash(transaction.id)}
+                            span.tooltiptext #{transaction.id}
+                .title.is-6 Transaction Inputs
+                table.table.is-striped.is-fullwidth
+                    thead
+                        tr
+                            th Transaction Id
+                            th Transaction Out Index
+                    tbody 
+                        each txin in transaction.txins
+                            tr 
+                                each column in txinColumns
+                                    td #{txin[column]}
+                .title.is-6 Transaction Outputs
+                table.table.is-striped.is-fullwidth
+                    thead
+                        tr
+                            th Address
+                            th Amount
+                    tbody 
+                        each txout in transaction.txouts
+                            tr 
+                                each column in txoutColumns
+                                    td #{txout[column]}
