@@ -21,7 +21,6 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
 
 - Networking using a REST API's using http protocol
 - Hard-coded peers (for now)
-- docker-compose for development environment
 
 #### Escalabillidad
 
@@ -47,6 +46,12 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
 
 - Excepciones
 - Nodos independientes
+
+#### Deployment
+
+- Local: docker-compose set-up
+  - network
+- Remoto: aún no implementado :(
 
 ### Referencias
 
