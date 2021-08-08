@@ -1,4 +1,4 @@
-# Proyecto Final
+# CS3P02 - Proyecto Final
 
 ## Descripción
 
@@ -9,20 +9,20 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
 - Hacer Proof of Work para confirmar transacciones.
 - Hacer broadcasting de transaccion/bloque a otros nodos.
 
-### Arquitectura
+## Arquitectura
 
-#### Multicontainer cliente-servidor
+### Multicontainer cliente-servidor
 
 - Contenedor 1: Flask application (backend)
 - Contenedor 2: Express application (frontend)
   - API documentation
 
-#### Peer-to-peer network
+### Peer-to-peer network
 
 - Networking using a REST API's using http protocol
 - Hard-coded peers (for now)
 
-#### Escalabillidad
+### Escalabillidad
 
 - "Trilema de la escalabilidad" de blockchain
   - Escalabilidad
@@ -30,24 +30,31 @@ Una criptomoneda basica para probar los conceptos aprendidos de seguridad del cu
   - Descentralización
 - Cada nodo independientemente puede escalar horizontal o verticalmente (Escalabilidad off-chain)
 
-#### Características de seguridad - confiabilidad
+### Monitoreo
+
+- Sentry cloud services
+  - Logs usando python SDK
+
+## Características
+
+### Posibles ataques
+
+- **51% Attack**: un grupo de miners controlan 50% del network, permitiendo el control sobre la cadena de bloques. Esto puede causar que el sistema colapse y que no acepten más transacciones.
+
+### Tolerancia a fallas
+
+- Excepcion del usuario
+- Excepciones del sistema
+- Nodos independientes
+
+### Seguridad
 
 - Integrity by proof of work hashes (SHA-256).
 - Ed25519 signatures using NaCL
 - Fixed proof of work difficulty
 - Consistency and peer blockchain validation
 
-#### Monitoreo
-
-- Sentry cloud services
-  - Logs usando python SDK
-
-#### Tolerancia a fallas
-
-- Excepciones
-- Nodos independientes
-
-#### Deployment
+## Deployment
 
 - Local: docker-compose set-up
   - network
